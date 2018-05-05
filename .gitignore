@@ -1,0 +1,4 @@
+# .gitignore for Lazarus
+lib/
+backup/
+*.exe

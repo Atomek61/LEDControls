@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="4">
+    <PathDelim Value="\"/>
+    <Name Value="ledcontrols"/>
+    <Type Value="RunAndDesignTime"/>
+    <Author Value="Jan-Erich Schirrmacher"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <Other>
+        <CompilerMessages>
+          <IgnoredMessages idx5024="True"/>
+        </CompilerMessages>
+      </Other>
+    </CompilerOptions>
+    <Description Value="Some typical led elements"/>
+    <License Value="You may use and modify the source code without any fee for any purpose but you are not allowed to take ownership over this source code."/>
+    <Version Major="1"/>
+    <Files Count="9">
+      <Item1>
+        <Filename Value="registerledcontrols.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="registerledcontrols"/>
+      </Item1>
+      <Item2>
+        <Filename Value="types.led.pas"/>
+        <UnitName Value="Types.Led"/>
+      </Item2>
+      <Item3>
+        <Filename Value="controls.blinker.pas"/>
+        <UnitName Value="Controls.Blinker"/>
+      </Item3>
+      <Item4>
+        <Filename Value="controls.ledmeter.pas"/>
+        <UnitName Value="Controls.LedMeter"/>
+      </Item4>
+      <Item5>
+        <Filename Value="controls.segmentdisplay.pas"/>
+        <UnitName Value="Controls.SegmentDisplay"/>
+      </Item5>
+      <Item6>
+        <Filename Value="controls.signalstrength.pas"/>
+        <UnitName Value="controls.signalstrength"/>
+      </Item6>
+      <Item7>
+        <Filename Value="blinker.res"/>
+        <Type Value="Binary"/>
+      </Item7>
+      <Item8>
+        <Filename Value="ledmeter.res"/>
+        <Type Value="Binary"/>
+      </Item8>
+      <Item9>
+        <Filename Value="segmentdisplay.res"/>
+        <Type Value="Binary"/>
+      </Item9>
+    </Files>
+    <LazDoc Paths="doc"/>
+    <RequiredPkgs Count="2">
+      <Item1>
+        <PackageName Value="BGRABitmapPack"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+      </Item2>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <CustomOptions Items="ExternHelp" Version="2">
+      <_ExternHelp Items="Count"/>
+    </CustomOptions>
+  </Package>
+</CONFIG>

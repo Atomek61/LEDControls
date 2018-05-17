@@ -675,7 +675,7 @@ end;
 
 procedure TDesign.SetEdgeRatio(AValue: single);
 begin
-  if FEdgeRatio=AValue then Exit;
+  if (FEdgeRatio=AValue) or (AValue<0.0) then Exit;
   FEdgeRatio:=AValue;
   Changed;
 end;
@@ -694,21 +694,21 @@ end;
 
 procedure TDesign.SetModuleRatio(AValue: single);
 begin
-  if FModuleRatio=AValue then Exit;
+  if (FModuleRatio=AValue) or (AValue<=0) then Exit;
   FModuleRatio:=AValue;
   Changed;
 end;
 
 procedure TDesign.SetSegmentRatio(AValue: single);
 begin
-  if FSegmentRatio=AValue then Exit;
+  if (FSegmentRatio=AValue) or (AValue<=0)  then Exit;
   FSegmentRatio:=AValue;
   Changed;
 end;
 
 procedure TDesign.SetSlitRatio(AValue: single);
 begin
-  if FSlitRatio=AValue then Exit;
+  if (FSlitRatio=AValue) and (AValue<0.0) then Exit;
   FSlitRatio:=AValue;
   Changed;
 end;
@@ -1297,15 +1297,6 @@ begin
         for Segment := SegA to SegF do
           DrawSegment(Segment, FDesign.DarkColor);
     end;
-{  'E':
-    begin
-      for Segment in SEG7SEGMENTS_E do
-        DrawSegment(Segment, FDesign.BrightColor);
-      if FDesign.DarkVisible then begin
-        DrawSegment(SegB, FDesign.DarkColor);
-        DrawSegment(SegC, FDesign.DarkColor);
-      end;
-    end;}
   '?':
     if Assigned(FDisplay.FOnDrawSegments) then begin
       UserSegments := [];

@@ -38,14 +38,14 @@ type
     FMaxLevel :single;
     FBarCount :integer;
     FGapSize :integer;
-    FBrightColor :TColor;
-    FDarkColor :TColor;
+    FOnColor :TColor;
+    FOffColor :TColor;
     FScreenLayout :TLayout;
     FOnChanged :TNotifyEvent;
     FLayoutRequired :boolean;
     procedure SetBarCount(AValue: integer);
-    procedure SetBrightColor(AValue: TColor);
-    procedure SetDarkColor(AValue: TColor);
+    procedure SetOnColor(AValue: TColor);
+    procedure SetOffColor(AValue: TColor);
     procedure SetGapSize(AValue: integer);
     procedure SetLevel(AValue: single);
     procedure DoLayout(const ARect :TRect; out ALayout :TLayout);
@@ -67,8 +67,8 @@ type
     property MaxLevel :single read FMaxLevel write SetMaxLevel;
     property Level :single read FLevel write SetLevel;
     property GapSize :integer read FGapSize write SetGapSize;
-    property BrightColor :TColor read FBrightColor write SetBrightColor;
-    property DarkColor :TColor read FDarkColor write SetDarkColor;
+    property OnColor :TColor read FOnColor write SetOnColor;
+    property OffColor :TColor read FOffColor write SetOffColor;
   end;
 
 implementation
@@ -79,8 +79,8 @@ const
   DEFAULTLEVEL    = 0.0;
   DEFAULTBARCOUNT = 4;
   DEFAULTGAPSIZE  = 2;
-  DEFAULTBRIGHTCOLOR  = LEDBRIGHTBLUE;
-  DEFAULTDARKCOLOR    = LEDDARKBLUE;
+  DEFAULTONCOLOR  = LEDBRIGHTBLUE;
+  DEFAULTOFFCOLOR = LEDDARKBLUE;
 
 { TSignalStrength }
 
@@ -95,8 +95,8 @@ begin
   FMaxLevel := DEFAULTMAXLEVEL;
   FBarCount := DEFAULTBARCOUNT;
   FGapSize  := DEFAULTGAPSIZE;
-  FBrightColor  := DEFAULTBRIGHTCOLOR;
-  FDarkColor    := DEFAULTDARKCOLOR;
+  FOnColor  := DEFAULTONCOLOR;
+  FOffColor := DEFAULTOFFCOLOR;
 end;
 
 procedure TSignalStrength.Changed;
@@ -148,13 +148,13 @@ begin
     n := FBarCount;
     d := FMaxLevel-FMinLevel;
     ci := round(n*(FLevel-FMinLevel)/d);
-    ACanvas.Brush.Color := FBrightColor;
+    ACanvas.Brush.Color := FOnColor;
     for i:=0 to n-1 do begin
       x := r.Left + i*(cu+s);
       l := (i+1)*d/n;
       y := round(r.Bottom - h*l/d);
       if ci=i then
-        ACanvas.Brush.Color := FDarkColor;
+        ACanvas.Brush.Color := FOffColor;
       ACanvas.FillRect(x, y, x+cu, r.Bottom);
     end;
   end;
@@ -175,10 +175,10 @@ begin
   Changed;
 end;
 
-procedure TSignalStrength.SetBrightColor(AValue: TColor);
+procedure TSignalStrength.SetOnColor(AValue: TColor);
 begin
-  if FBrightColor=AValue then Exit;
-  FBrightColor:=AValue;
+  if FOnColor=AValue then Exit;
+  FOnColor:=AValue;
   Changed;
 end;
 
@@ -190,10 +190,10 @@ begin
   Changed;
 end;
 
-procedure TSignalStrength.SetDarkColor(AValue: TColor);
+procedure TSignalStrength.SetOffColor(AValue: TColor);
 begin
-  if FDarkColor=AValue then Exit;
-  FDarkColor:=AValue;
+  if FOffColor=AValue then Exit;
+  FOffColor:=AValue;
   Changed;
 end;
 

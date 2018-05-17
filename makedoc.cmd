@@ -1,1 +1,0 @@
-D:\Programme\Lazarus\fpc\3.0.4\bin\x86_64-win64\fpdoc --package=ledcontrols --input=controls.blinker.pas

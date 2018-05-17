@@ -59,7 +59,7 @@
         <Type Value="Binary"/>
       </Item9>
     </Files>
-    <LazDoc Paths="doc"/>
+    <LazDoc Paths="docs"/>
     <RequiredPkgs Count="2">
       <Item1>
         <PackageName Value="BGRABitmapPack"/>

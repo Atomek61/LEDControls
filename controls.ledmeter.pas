@@ -19,7 +19,6 @@ unit Controls.LedMeter;
 //
 //  To define the colors, edit the ColorNodes collection. You must define
 //  one ColorNode for minimum. The nodes levels must be in ascending order.
-//  The dark color is made from the Color and the darkness-factor.
 //
 //  Note the "Orientation"- and the "Style"-Properties.
 //
@@ -33,7 +32,6 @@ uses
   Windows, Classes, Graphics, Controls, SysUtils, ExtCtrls;
 
 const
-  DEFAULTDARKNESS = 0.20; // 0..1, 0 ist schwarz
   DEFAULTAUTOZEROINTERVAL = 50;
   DEFAULTSEGMENTSIZE = 8;
   DEFAULTGAPSIZE = 2;
@@ -52,7 +50,8 @@ type
     FOffColor :TColor;
     FLevel :single;
     function GetLedMeter: TLedMeter;
-    procedure SetColor(const Value: TColor);
+    procedure SetOnColor(const Value: TColor);
+    procedure SetOffColor(const Value: TColor);
     procedure SetLevel(const Value: single);
   protected
     property LedMeter :TLedMeter read GetLedMeter;
@@ -60,9 +59,9 @@ type
     constructor Create(ACollection: TCollection); override;
     procedure AssignTo(Dest: TPersistent); override;
     function GetDisplayName: string; override;
-    property OffColor :TColor read FOffColor;
   published
-    property Color :TColor read FOnColor write SetColor;
+    property OnColor :TColor read FOnColor write SetOnColor;
+    property OffColor :TColor read FOffColor write SetOffColor;
     property Level :single read FLevel write SetLevel;
   end;
 
@@ -101,7 +100,6 @@ type
     FGapSize :integer;
     FOrientation :TOrientation;
     FStyle :TStyle;
-    FDarkness :single;
     FWindowMetrics :TMetrics;
     FWindowMetricsRequired :boolean;
     FOnChange :TNotifyEvent;
@@ -112,7 +110,6 @@ type
     function GetMinLevel: single;
     procedure SetAutoZero(AValue: boolean);
     procedure SetAutoZeroInterval(AValue: integer);
-    procedure SetDarkness(AValue: single);
     procedure WindowMetricsRequired;
     function GetRange: single;
     function GetLevel0: single;
@@ -155,7 +152,6 @@ type
     property Orientation :TOrientation read FOrientation write SetOrientation default loVertical;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
     property Style :TStyle read FStyle write SetStyle default lsNormal;
-    property Darkness :single read FDarkness write SetDarkness;
     property AutoZero :boolean read GetAutoZero write SetAutoZero;
     property AutoZeroInterval :integer read FAutoZeroInterval write SetAutoZeroInterval;
     property Anchors;
@@ -193,14 +189,15 @@ type
 implementation
 
 uses
-  Graphics.Utils;
+  Types.Led;
 
 { TColorNode }
 
 procedure TColorNode.AssignTo(Dest: TPersistent);
 begin
   if Dest is TColorNode then begin
-    TColorNode(Dest).Color := Color;
+    TColorNode(Dest).OnColor := OnColor;
+    TColorNode(Dest).OffColor := OffColor;
     TColorNode(Dest).Level := Level;
   end else
     inherited;
@@ -209,8 +206,8 @@ end;
 constructor TColorNode.Create(ACollection: TCollection);
 begin
   inherited;
-  FOnColor := clGreen;
-  FOffColor := InterpolateColor(clBlack, ColorToRGB(FOnColor), LedMeter.FDarkness);
+  FOnColor := LEDBRIGHTGREEN;
+  FOffColor := LEDDARKGREEN;
   FLevel := 1.0;
 end;
 
@@ -219,11 +216,18 @@ begin
   result := Format('Level %d', [Index+1]);
 end;
 
-procedure TColorNode.SetColor(const Value: TColor);
+procedure TColorNode.SetOnColor(const Value: TColor);
 begin
   if Value<>FOnColor then begin
     FOnColor := Value;
-    FOffColor := InterpolateColor(clBlack, ColorToRGB(Value), LedMeter.FDarkness);
+    Changed(false);
+  end;
+end;
+
+procedure TColorNode.SetOffColor(const Value: TColor);
+begin
+  if Value<>FOffColor then begin
+    FOffColor := Value;
     Changed(false);
   end;
 end;
@@ -252,7 +256,6 @@ begin
 
   FColorNodes := TColorNodeCollection.Create(self, TColorNode);
 
-  FDarkness     := DEFAULTDARKNESS;
   FMinLevel     := 0.0;
   FSegmentSize  := DEFAULTSEGMENTSIZE;
   FGapSize      := DEFAULTGAPSIZE;
@@ -302,20 +305,6 @@ begin
     CalcMetrics(ClientRect, FWindowMetrics);
     FWindowMetricsRequired := false;
   end;
-end;
-
-procedure TLedMeter.SetDarkness(AValue: single);
-var
-  i :integer;
-begin
-  if AValue<0.0 then AValue := 0.0
-  else if AValue>1.0 then AValue := 1.0;
-  if FDarkness=AValue then Exit;
-  FDarkness:=AValue;
-  for i:=0 to FColorNodes.Count-1 do
-    with FColorNodes[i] do
-      FOffColor := InterpolateColor(clBlack, ColorToRGB(FOnColor), FDarkness);
-  Changed;
 end;
 
 function TLedMeter.GetMinLevel: single;
@@ -635,50 +624,60 @@ begin
   lcsSimple:
     begin
       with FColorNodes.Add as TColorNode do begin
-        Level := 1.0;
-        Color := clLime;
+        Level     := 1.0;
+        OnColor   := LEDBRIGHTGREEN;
+        OffColor  := LEDDARKGREEN;
       end;
     end;
   lcsSound:
     begin
       with FColorNodes.Add as TColorNode do begin
-        Level := 0.5;
-        Color := clLime;
+        Level     := 0.5;
+        OnColor   := LEDBRIGHTGREEN;
+        OffColor  := LEDDARKGREEN;
       end;
       with FColorNodes.Add as TColorNode do begin
-        Level := 0.75;
-        Color := clYellow;
+        Level     := 0.75;
+        OnColor   := LEDBRIGHTYELLOW;
+        OffColor  := LEDDARKYELLOW;
       end;
       with FColorNodes.Add as TColorNode do begin
-        Level := 1.0;
-        Color := clRed;
+        Level     := 1.0;
+        OnColor   := LEDBRIGHTRED;
+        OffColor  := LEDDARKRED;
       end;
     end;
   lcsRainbow:
     begin
       with FColorNodes.Add as TColorNode do begin
         Level := 1/6;
-        Color := clAqua;
+        OnColor   := $FF00FF;
+        OffColor  := $330033;
       end;
       with FColorNodes.Add as TColorNode do begin
         Level := 2/6;
-        Color := clBlue;
+        OnColor   := $FFFF00;
+        OffColor  := $333300;
       end;
       with FColorNodes.Add as TColorNode do begin
         Level := 3/6;
-        Color := clLime;
+        OnColor   := $99FF99;
+        OffColor  := $003300;
       end;
       with FColorNodes.Add as TColorNode do begin
         Level := 4/6;
-        Color := clYellow;
+        OnColor   := $99FFFF;
+        OffColor  := $003333;
       end;
       with FColorNodes.Add as TColorNode do begin
         Level := 5/6;
-        Color := clRed;
+        OnColor   := $3399FF;
+        OffColor  := $00264D;
       end;
       with FColorNodes.Add as TColorNode do begin
         Level := 6/6;
-        Color := clPurple;
+        OnColor   := $0000FF;
+        OffColor  := $00004D;
       end;
     end;
   end;

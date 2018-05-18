@@ -10,7 +10,7 @@ TSignalStrength
 
 The package LEDControls depends on package BGRABitmapPack (only component TSegmentDisplay).
 
-Documentation and demoprograms will follow soon.
+Documentation: www.atomek.de/coding/ledcontrols
 
 Installation
 

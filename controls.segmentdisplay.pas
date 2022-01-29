@@ -304,7 +304,7 @@ type
     function Layout(AHeight :integer) :integer; override;
     function DrawSymbol(ASymbol :char) :boolean; override;
   public
-    constructor Create(ADesign :TDesign);
+    constructor Create(ADisplay :TSegmentDisplay; ADesign :TDesign);
   end;
 
   { T7SegDotModuleType }
@@ -323,7 +323,7 @@ type
     function Layout(AHeight :integer) :integer; override;
     function DrawSymbol(ASymbol :char) :boolean; override;
   public
-    constructor Create(ADesign :TDesign);
+    constructor Create(ADisplay :TSegmentDisplay; ADesign :TDesign);
   end;
 
   { TDoubleDotModuleType }
@@ -347,8 +347,6 @@ type
 { TSegmentDisplay }
 
 constructor TSegmentDisplay.Create(AOwner: TComponent);
-var
-  SegModType :T7SegModuleType;
 begin
   inherited Create(AOwner);
   FModuleTypes := TModuleTypes.Create;
@@ -361,10 +359,8 @@ begin
   FGapRatio   := DEFAULTGAPRATIO;
   FDesign.FPOAttachObserver(self);
 
-  ModuleTypes.Add(T7SegDotModuleType.Create(Design));
-  SegModType := T7SegModuleType.Create(Design);
-  SegModType.FDisplay := self;
-  ModuleTypes.Add(SegModType);
+  ModuleTypes.Add(T7SegDotModuleType.Create(self, Design));
+  ModuleTypes.Add(T7SegModuleType.Create(self, Design));
   ModuleTypes.Add(TDoubleDotModuleType.Create(Design));
   ModuleTypes.Add(TSpacerModuleType.Create(Design));
 
@@ -795,9 +791,10 @@ end;
 
 { T7SegModuleType }
 
-constructor T7SegModuleType.Create(ADesign: TDesign);
+constructor T7SegModuleType.Create(ADisplay :TSegmentDisplay; ADesign: TDesign);
 begin
-  inherited;
+  inherited Create(ADesign);
+  FDisplay := ADisplay;
   DefineCharset(SEG7CHARSET);
 end;
 
@@ -1263,9 +1260,10 @@ var
   end;
 
 begin
-  if FDesign.InnerGlow then begin
-    Gradient:= TBGRAGradientScanner.Create(FDesign.BrightColor, FDesign.BackgroundColor, gtRadial, PointF(0, 0), PointF(1.2,1.2), false, false);
-  end;
+  if FDesign.InnerGlow then
+    Gradient := TBGRAGradientScanner.Create(FDesign.BrightColor, FDesign.BackgroundColor, gtRadial, PointF(0, 0), PointF(1.2,1.2), false, false)
+  else
+    Gradient := nil;
   case ASymbol of
   ' ':
     begin
@@ -1317,7 +1315,7 @@ end;
 
 { T7SegDotModuleType }
 
-constructor T7SegDotModuleType.Create(ADesign: TDesign);
+constructor T7SegDotModuleType.Create(ADisplay :TSegmentDisplay; ADesign: TDesign);
 begin
   inherited;
   DefineCharset(SEG7DOTCHARSET);
